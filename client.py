@@ -28,6 +28,7 @@ def videoStream():
         cv2.imshow("Client Frame",frame)
         if cv2.waitKey(1) == 27:
             break
+
     cv2.destroyAllWindows()
 
 streamThread = Thread(target=videoStream)
@@ -35,6 +36,8 @@ streamThread.start()
 lock = Lock()
 
 while True:
+    if not streamThread.isAlive(): break
+
     msgLength = s.recv(HEADER_SIZE)
     print(msgLength.decode('utf-8'))
     msgLength = int(msgLength.decode('utf-8'))
