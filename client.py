@@ -6,6 +6,8 @@ import pickle
 import errno
 from time import sleep
 
+testImg = 'median.jpg'
+
 TCP_IP = '0.0.0.0'
 TCP_PORT = 6000
 BUFFER_SIZE = 4096
@@ -36,17 +38,21 @@ def sendVideoStream():
     global ret,frame
     print("Video Stream Started in new Thread")
     lock = Lock()
-    cap = cv2.VideoCapture(0)
-    ret,frame = cap.read()
-    while ret:
-        lock.acquire()
-        ret,frame = cap.read() 
-        lock.release()
-    cap.release()
+    try:
+        # cap = cv2.VideoCapture(0)
+        # ret,frame = cap.read()
+        while ret:
+            lock.acquire()
+            # ret,frame = cap.read()
+            frame = cv2.imread(testImg)
+            lock.release()
+    except:
+        # cap.release()
+        pass
 
 def sendStream(streamThread: Thread):
     try:
-        while True:
+        while ret:
             frameBytes = pickle.dumps(frame)
             print(len(frameBytes))
             header = bytes(f"{len(frameBytes):<{HEADER_SIZE}}",'utf-8')
