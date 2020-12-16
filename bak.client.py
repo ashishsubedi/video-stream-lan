@@ -39,15 +39,15 @@ def sendVideoStream():
     print("Video Stream Started in new Thread")
     lock = Lock()
     try:
-        # cap = cv2.VideoCapture(0)
-        # ret,frame = cap.read()
+        cap = cv2.VideoCapture(0)
+        ret,frame = cap.read()
         while ret:
             lock.acquire()
-            # ret,frame = cap.read()
-            frame = cv2.imread(testImg)
+            ret,frame = cap.read()
+            # frame = cv2.imread(testImg)
             lock.release()
     except:
-        # cap.release()
+        cap.release()
         pass
 
 def sendStream(streamThread: Thread):

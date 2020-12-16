@@ -54,11 +54,7 @@ class ClientThread(Thread):
         if(self.flag==SEND_FLAG):
             sendStream(streamThread,self.sock,rootID)
         else:
-              #Target = getVideoStream
-            # streamThread = Thread(target=self.target,args=(self.frameName,self.id,self))
-         
-            # streamThread.start()
-
+       
             self.stop = recvStream(streamThread,self.sock,self.id,self)
 
 def sendVideoStream(id):
@@ -74,24 +70,6 @@ def sendVideoStream(id):
         framesDict[id]=newFrame
     cap.release()
         
-# def getVideoStream(frameName,id,self):
-#     print("Receiving Video Stream in new Thread")
-#     print(framesDict.keys())
-#     cv2.imshow(frameName,framesDict[id])
-
-#     while not self.stop:
-#         try:
-#             if(not self.is_alive()):raise Exception("THREAD OVER because DEAD 2")
-            
-#             if cv2.waitKey(1) == 27:
-#                 break
-#         except Exception as e:
-#             print("Error in getting Video stream",e)
-#             break
-        
-
-    # cv2.destroyWindow(frameName)
-
     
 
 def sendStream(streamThread: Thread,sock: socket.socket,id):
@@ -192,15 +170,23 @@ def startServer():
 
 CAM_OPEN = True
 def openCVThread():
-    lock = Lock()
+
+    prev = {}
     while CAM_OPEN:
-        # lock.acquire()
-        for id in list(framesDict):
+
+        print(framesDict.keys())
+        curr = list(framesDict)
+        orphans = set(prev)
+        for id in curr:
+            if id in orphans:
+                orphans.remove(id)
             cv2.imshow(id,framesDict[id])
             if(cv2.waitKey(1)==27):
                 cv2.destroyWindow(id)
-        # lock.release()
-        
+
+        for orphan in orphans:
+            cv2.destroyWindow(orphan)
+        prev = curr
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
